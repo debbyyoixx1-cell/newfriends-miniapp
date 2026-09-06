@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+<title>New Friends For You — Telegram Mini App</title>
+<meta name="description" content="New Friends For You mini app: browse profiles, react with like, haha and wow, and manage your own profile." />
+<meta property="og:title" content="New Friends For You — Mini App" />
+<meta property="og:description" content="Browse profiles, react, and manage your profile inside Telegram." />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="aurora"><span></span><span></span><span></span></div>
+
+  <header class="topbar glass">
+    <div class="brand">
+      <span class="logo">♡</span>
+      <div>
+        <h1>New Friends For You</h1>
+        <p id="subtitle">Telegram Mini App</p>
+      </div>
+    </div>
+  </header>
+
+  <main id="screen-feed" class="screen active">
+    <div id="feed" class="feed"></div>
+    <div id="feed-empty" class="empty glass hidden"></div>
+  </main>
+
+  <main id="screen-my" class="screen">
+    <div class="panel glass" id="my-panel"></div>
+  </main>
+
+  <main id="screen-edit" class="screen">
+    <div class="panel glass" id="edit-panel"></div>
+  </main>
+
+  <nav class="tabbar glass">
+    <button class="tab active" data-tab="foryou"><span>💫</span>For You</button>
+    <button class="tab" data-tab="view"><span>👀</span>View Profile</button>
+    <button class="tab" data-tab="my"><span>🪪</span>My Profile</button>
+    <button class="tab" data-tab="edit"><span>✏️</span>Edit Profile</button>
+  </nav>
+
+  <div id="toast" class="toast glass"></div>
+  <script src="./app.js"></script>
+</body>
+</html>
