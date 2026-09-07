@@ -23,12 +23,23 @@ function toast(msg) {
 }
 
 async function api(path, payload = {}) {
-  const res = await fetch(API + path, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ initData, ...payload }),
-  });
-  return res.json();
+  // text/plain avoids a CORS preflight (some mobile networks block OPTIONS)
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 25000);
+  try {
+    const res = await fetch(API + path, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=UTF-8" },
+      body: JSON.stringify({ initData, ...payload }),
+      signal: ctrl.signal,
+    });
+    const text = await res.text();
+    try { return JSON.parse(text); } catch (_) { return { error: "bad_response" }; }
+  } catch (err) {
+    return { error: "network", message: String(err && err.message || err) };
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 function esc(s) {
@@ -86,6 +97,15 @@ async function loadFeed(mode) {
   empty.classList.add("hidden");
   feed.innerHTML = '<div class="skeleton">ခဏစောင့်ပါ…</div>';
   const res = await api("feed", { mode });
+  if (res.error === "network" || res.error === "bad_response") {
+    feed.innerHTML = '<div class="skeleton">ကွန်ရက် အဆင်မပြေပါ။ <br/><br/><button class="save" id="retry">🔄 ပြန်ကြိုးစားမည်</button></div>';
+    document.getElementById("retry").addEventListener("click", () => loadFeed(mode));
+    return;
+  }
+  if (res.error === "unauthorized") {
+    feed.innerHTML = '<div class="skeleton">Telegram Bot ထဲက Menu ကနေ ပြန်ဖွင့်ပေးပါ။</div>';
+    return;
+  }
   const list = res.profiles || [];
   state.pool[mode] = list;
   if (!list.length) {
