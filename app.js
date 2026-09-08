@@ -5,7 +5,14 @@ tg?.ready();
 tg?.expand();
 try { tg?.setHeaderColor?.("#0a0a1f"); tg?.setBackgroundColor?.("#0a0a1f"); } catch (_) {}
 
-const initData = tg?.initData || "";
+function readInitData() {
+  if (tg?.initData) return tg.initData;
+  const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+  const query = new URLSearchParams(window.location.search);
+  return hash.get("tgWebAppData") || query.get("tgWebAppData") || "";
+}
+
+const initData = readInitData();
 
 const ZODIAC_EMOJI = {
   Aries: "♈", Taurus: "♉", Gemini: "♊", Cancer: "♋", Leo: "♌", Virgo: "♍",
@@ -25,13 +32,14 @@ function toast(msg) {
 async function api(path, payload = {}) {
   // text/plain avoids a CORS preflight (some mobile networks block OPTIONS)
   const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), 25000);
+  const timer = setTimeout(() => ctrl.abort(), 12000);
   try {
     const res = await fetch(API + path, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=UTF-8" },
       body: JSON.stringify({ initData, ...payload }),
       signal: ctrl.signal,
+      cache: "no-store",
     });
     const text = await res.text();
     try { return JSON.parse(text); } catch (_) { return { error: "bad_response" }; }
